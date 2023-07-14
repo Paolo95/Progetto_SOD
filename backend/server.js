@@ -31,7 +31,6 @@ app.use('/', express.static(path.join(__dirname, '/public')));
 
 // routes
 app.use('/', require('./routes/rootRoute'));
-app.use('/getMQTTData', require('./routes/getMQTTDataRoute'));
 
 app.all('*', (req, res) => {
     res.status(404);
