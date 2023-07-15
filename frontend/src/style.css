@@ -1,0 +1,82 @@
+.container{
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.header-div{
+    text-align: center;
+}
+
+.real-time-div{
+    border: 1px solid;    
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px 0px #000000;
+}
+
+.single-value-div{
+    gap: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.single-value{
+    border: 1px solid;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 200px;
+    text-align: center;
+}
+
+.connection-monitor{
+    margin: 0 20px 0 20px;
+}
+
+.connection-monitor p{
+    font-weight: 500;
+}
+
+.latest-update{
+    margin: 0 20px 0 20px;
+}
+
+.latest-update p{
+    font-weight: 500;
+    text-align: center;
+}
+
+.line-charts-div{
+    border: 1px solid;    
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px 0px #000000;
+    margin-top: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.line-chart{
+    width: 500px;
+    height: 300px;
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 5px 5px 0 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.line-chart p{
+    text-align: center;
+}
+
+.enabled{
+    color: green;
+}
+
+.disabled{
+    color:red;
+}
