@@ -42,7 +42,13 @@
 }
 
 .latest-update{
-    margin: 0 20px 0 20px;
+    margin: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.latest-update button{
+    cursor: pointer;
 }
 
 .latest-update p{

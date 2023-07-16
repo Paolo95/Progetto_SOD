@@ -41,6 +41,8 @@ const App = () => {
   const [temperature_DB, setTemperature_DB] = useState([]);
 
   const [labels, setLabels] = useState([]);
+
+  const [mqttClient, setMqttClient] = useState(null);
   
   const STORE_DB_DATA = "/storeDBData"
   const GET_DB_DATA = "/getDBData"
@@ -49,6 +51,8 @@ const App = () => {
     // Connect to MQTT broker
    
     const client = mqtt.connect(process.env.REACT_APP_MQTT_BROKER);
+
+    setMqttClient(client);
 
     client.on('connect', () => {
       setStatus("ATTIVA");
@@ -195,6 +199,17 @@ const App = () => {
       }
     ]
   }
+  
+  const publishMessage = () => {
+    if (mqttClient) {
+      const message = JSON.stringify({
+        message: "refresh_data"
+      }); // Replace with the desired message
+      mqttClient.publish('WEB_REQ', message);
+    }
+  };
+  
+
 
   return (
     <section className='Progetto_SOD_WEB'>
@@ -228,6 +243,7 @@ const App = () => {
           </div>
           <div className='latest-update'>
             <p>Ultimo aggiornamento: {timestamp}</p>
+            <button onClick={publishMessage}>Richiedi nuovo dato</button>
           </div>
         </div>
 
