@@ -12,12 +12,8 @@ const Sensor_data_schema = new Schema({
         required: true
     },
     temperature: {
-        User: {
-            type: Number,
-            default: 2001
-        },
-        Editor: Number,
-        Admin: Number
+        type: String,
+        required: true
     },
     pressure: {
         type: String,

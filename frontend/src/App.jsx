@@ -33,15 +33,26 @@ const App = () => {
   const [pressure, setPressure] = useState("");
   const [temperature, setTemperature] = useState("");
   const [status, setStatus] = useState("NON ATTIVA");
+
+  const [timestamp_DB, setTimestamp_DB] = useState([]);
+  const [altitude_DB, setAltitude_DB] = useState([]);
+  const [lux_DB, setLux_DB] = useState([]);
+  const [pressure_DB, setPressure_DB] = useState([]);
+  const [temperature_DB, setTemperature_DB] = useState([]);
+
+  const [labels, setLabels] = useState([]);
   
   const STORE_DB_DATA = "/storeDBData"
+  const GET_DB_DATA = "/getDBData"
 
   useEffect(() => {
     // Connect to MQTT broker
-    const client = mqtt.connect('ws://192.168.1.8:1884');
+   
+    const client = mqtt.connect(process.env.REACT_APP_MQTT_BROKER);
 
     client.on('connect', () => {
       setStatus("ATTIVA");
+      getDBData();
     });
 
     // Subscribe to a topic
@@ -58,6 +69,7 @@ const App = () => {
       setPressure(pressure);
 
       storeDBData(timestamp, temperature, altitude, lux, pressure);
+      getDBData();
     });
 
     // Unsubscribe and disconnect when component unmounts
@@ -74,14 +86,14 @@ const App = () => {
          
       await axios.post(STORE_DB_DATA, 
         {
-          timestamp,
-          temperature,
-          altitude,
-          pressure,
-          lux
+          timestamp: timestamp,
+          temperature: temperature,
+          altitude: altitude,
+          pressure: pressure,
+          lux: lux
         },
         {
-          headers: { 'Content-Type': 'application/json'},
+          
         }
       ); 
 
@@ -96,7 +108,37 @@ const App = () => {
     }    
   }
 
-  const labels = ["CIAO"];
+  const getDBData = async () => {
+
+    try {
+         
+      const response = await axios.post(GET_DB_DATA, 
+        {
+          
+        },
+        {
+          
+        }
+      ); 
+      
+      
+      setLabels(response.data.map(obj => obj.timestamp));
+      setTimestamp_DB(response.data.map(obj => obj.timestamp));
+      setAltitude_DB(response.data.map(obj => obj.altitude));
+      setLux_DB(response.data.map(obj => obj.lux));
+      setPressure_DB(response.data.map(obj => obj.pressure));
+      setTemperature_DB(response.data.map(obj => obj.temperature));
+    
+    } catch (err) {
+      if(!err?.response){
+        console.error('Server non attivo!');
+      }else if(err.response?.status === 500){
+        console.error(err.response?.data);
+      }else{
+        console.error('Query di caricamento fallita!');
+      }
+    }    
+  }
 
   const options = {
     plugins: {
@@ -111,7 +153,7 @@ const App = () => {
     datasets: [
       {
         label: "Temperatura",
-        data: [0, 1, 2],
+        data: temperature_DB,
         backgroundColor: "#2196F3",
         borderColor: "#2196F3",
       }
@@ -123,9 +165,9 @@ const App = () => {
     datasets: [
       {
         label: "Pressione",
-        data: [0, 1, 2],
-        backgroundColor: "#2196F3",
-        borderColor: "#2196F3",
+        data: pressure_DB,
+        backgroundColor: "#e5c710",
+        borderColor: "#e5c710",
       }
     ]
   }
@@ -135,9 +177,9 @@ const App = () => {
     datasets: [
       {
         label: "Altitude",
-        data: [0, 1, 2],
-        backgroundColor: "#2196F3",
-        borderColor: "#2196F3",
+        data: altitude_DB,
+        backgroundColor: "#851515",
+        borderColor: "#851515",
       }
     ]
   }
@@ -147,9 +189,9 @@ const App = () => {
     datasets: [
       {
         label: "Lux",
-        data: [0, 1, 2],
-        backgroundColor: "#2196F3",
-        borderColor: "#2196F3",
+        data: lux_DB,
+        backgroundColor: "#2d5f40",
+        borderColor: "#2d5f40",
       }
     ]
   }
@@ -163,6 +205,7 @@ const App = () => {
         </div>
         <div className='real-time-div'>
           <div className='connection-monitor'>
+            <p className='real-time-title'>Dati in tempo reale</p>
             <p className={status=== 'NON ATTIVA' ? 'disabled' : 'enabled' }>Connessione MQTT: {status}</p>
           </div>
           <div className='single-value-div'>
@@ -191,19 +234,19 @@ const App = () => {
         <div className='line-charts-div'>
           <div className='line-chart'>
             <Line options={options} data={tempData}/>
-            <p>Ultimo aggiornamento: </p>
+            <p>Ultimo aggiornamento: {timestamp_DB[timestamp_DB.length - 1]}</p>
           </div>
           <div className='line-chart'>
             <Line options={options} data={pressureData}/>
-            <p>Ultimo aggiornamento: </p>
+            <p>Ultimo aggiornamento: {timestamp_DB[timestamp_DB.length - 1]}</p>
           </div>
           <div className='line-chart'>
             <Line options={options} data={altitudeData}/>
-            <p>Ultimo aggiornamento: </p>
+            <p>Ultimo aggiornamento: {timestamp_DB[timestamp_DB.length - 1]}</p>
           </div>
           <div className='line-chart'>
             <Line options={options} data={luxData}/>
-            <p>Ultimo aggiornamento: </p>
+            <p>Ultimo aggiornamento: {timestamp_DB[timestamp_DB.length - 1]}</p>
           </div>
         </div>
       </div>
