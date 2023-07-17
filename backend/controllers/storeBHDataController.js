@@ -1,17 +1,15 @@
 const Sensor_data = require('../model/Sensor_data');
+const BH1750Model = Sensor_data.BH1750;
 
-const handleStoreDBData = async (req, res) => {
-
+const handleStoreBHData = async (req, res) => {
+    
     try {
 
         //create and store the new user
-        const result = await Sensor_data.create({
+        const result = await BH1750Model.create({
 
             timestamp: req.body.timestamp,
-            temperature: req.body.temperature,
-            altitude: req.body.altitude,
-            pressure: req.body.pressure,
-            lux: req.body.lux
+            lux: req.body.lux,
 
         });
 
@@ -21,4 +19,4 @@ const handleStoreDBData = async (req, res) => {
     }
 }
 
-module.exports = { handleStoreDBData };
+module.exports = { handleStoreBHData };

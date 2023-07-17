@@ -30,8 +30,11 @@ app.use('/', express.static(path.join(__dirname, '/public')));
 
 // routes
 app.use('/', require('./routes/rootRoute'));
-app.use('/getDBData', require('./routes/getDBData'));
-app.use('/storeDBData', require('./routes/storeDBData'));
+app.use('/getBMPData', require('./routes/getBMPData'));
+app.use('/getBHData', require('./routes/getBHData'));
+
+app.use('/storeBMPData', require('./routes/storeBMPData'));
+app.use('/storeBHData', require('./routes/storeBHData'));
 
 app.all('*', (req, res) => {
     res.status(404);

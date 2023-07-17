@@ -1,11 +1,12 @@
 const Sensor_data = require('../model/Sensor_data');
+const BH1750Model = Sensor_data.BH1750;
 
-const handleGetDBData = async (req, res) => {
+const handleGetBHData = async (req, res) => {
     
-    try {
 
+    try{
         //create and store the new user
-        const result = await Sensor_data.find({});
+        const result = await BH1750Model.find({}).sort({ timestamp: 1 });
         
         res.status(200).json(result);
     } catch (err) {
@@ -13,4 +14,4 @@ const handleGetDBData = async (req, res) => {
     }
 }
 
-module.exports = { handleGetDBData };
+module.exports = { handleGetBHData };

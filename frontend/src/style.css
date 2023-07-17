@@ -17,20 +17,32 @@
     box-shadow: 1px 1px 5px 0px #000000;
 }
 
-.single-value-div{
+.sensor-values-div{
     gap: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.single-value{
+.sensor-values{
     border: 1px solid;
     border-radius: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
-    width: 200px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px 0 20px;
+    flex-direction: column;
+    height: 200px;
+}
+
+.sensor-value{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
 }
 
 .connection-monitor{
@@ -42,17 +54,39 @@
 }
 
 .latest-update{
-    margin: 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .latest-update button{
     cursor: pointer;
 }
 
+.latest-rtc{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.sensor-values p{
+    font-weight: 500;
+    text-align: center;
+    font-size: 12px;
+    text-align: center;
+}
+
+.btn{
+    width: 100px;
+    height: 40px;
+}
+
 .latest-update p{
     font-weight: 500;
+    text-align: center;
+    font-size: 12px;
     text-align: center;
 }
 
@@ -71,12 +105,13 @@
 
 .line-chart{
     width: 500px;
-    height: 300px;
+    height: 400px;
     border: 1px solid;
     border-radius: 5px;
     padding: 5px 5px 0 5px;
     display: flex;
     flex-direction: column;
+    padding-bottom: 55px;
 }
 
 .line-chart p{
