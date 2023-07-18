@@ -83,23 +83,17 @@ const App = () => {
     client.on('message', (topic, message) => {
 
       if(message.toString() === 'RTC sync successfull!'){
+
           setMessage(message.toString());
           showMessageFor10Seconds(message.toString());
+
       }else{
+
         const { timestamp, temperature, altitude, pressure, lux } = JSON.parse(message.toString());
       
-        if ( timestamp === 'error' || temperature === 'error' || altitude === 'error' || pressure === 'error' || lux === 'error') {
+        if ( (timestamp === 'error' || temperature === 'error' || altitude === 'error' || pressure === 'error' ) && (topic === 'BMP280' ) ) {
   
           setTimestamp_RT_BMP(new Date().toLocaleString('en-US', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-          }));
-  
-          setTimestamp_RT_BH(new Date().toLocaleString('en-US', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
@@ -111,35 +105,49 @@ const App = () => {
           setTemperature_RT("-1");
           setAltitude_RT("-1");
           setPressure_RT("-1");        
+  
+        }else if (( timestamp === 'error' || lux === 'error' ) && ( topic === 'BH1750' )){
+  
+          setTimestamp_RT_BH(new Date().toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }));
+
           setLux_RT("-1");
+
+        }else if(( timestamp === 'error' ) && ( topic === 'RTC' ) ){
+          
           setLatestRTCTimestamp("Error");
           setRTCTimestamp();
-  
-        }else{
-  
-          if( topic === 'BMP280' ){
-  
-            const { timestamp, temperature, altitude, pressure } = JSON.parse(message.toString());
-            storeBMPData(timestamp, temperature, altitude, pressure);
-            setTimestamp_RT_BMP(timestamp);
-            setTemperature_RT(temperature);
-            setAltitude_RT(altitude);
-            setPressure_RT(pressure);
-          } else if( topic === 'BH1750' ){
-            const { timestamp, lux } = JSON.parse(message.toString());
-            storeBHData(timestamp, lux);
-            setTimestamp_RT_BH(timestamp);
-            setLux_RT(lux);
-          } else if ( topic === 'RTC' ){
-              const { timestamp } = JSON.parse(message.toString());
-              setRTCTimestamp(new Date(timestamp));
-              setLatestRTCTimestamp(timestamp);
-            }
-            
-        }
-      }
 
-      
+        }else if(( timestamp !== 'error' || temperature !== 'error' || altitude !== 'error' || pressure !== 'error' ) && topic === 'BMP280' ){
+
+          const { timestamp, temperature, altitude, pressure } = JSON.parse(message.toString());
+          storeBMPData(timestamp, temperature, altitude, pressure);
+          setTimestamp_RT_BMP(timestamp);
+          setTemperature_RT(temperature);
+          setAltitude_RT(altitude);
+          setPressure_RT(pressure);
+
+        } else if(( timestamp !== 'error' || lux !== 'error' ) && topic === 'BH1750' ){
+
+          const { timestamp, lux } = JSON.parse(message.toString());
+          storeBHData(timestamp, lux);
+          setTimestamp_RT_BH(timestamp);
+          setLux_RT(lux);
+
+        } else if(( timestamp !== 'error'  ) && topic === 'RTC' ){
+          
+            const { timestamp } = JSON.parse(message.toString());
+            setRTCTimestamp(new Date(timestamp));
+            setLatestRTCTimestamp(timestamp);
+        }
+            
+      }
 
     });
 
