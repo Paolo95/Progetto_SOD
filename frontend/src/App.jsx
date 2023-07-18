@@ -51,6 +51,9 @@ const App = () => {
   const [latestRTCTimestamp, setLatestRTCTimestamp] = useState();
 
   const [mqttClient, setMqttClient] = useState(null);
+
+  const [message, setMessage] = useState('');
+  const [showMessage, setShowMessage] = useState(false);
   
   const STORE_BMP_DATA = "/storeBMPData"
   const STORE_BH_DATA = "/storeBHData"
@@ -79,56 +82,64 @@ const App = () => {
     // Handle incoming messages
     client.on('message', (topic, message) => {
 
-      const { timestamp, temperature, altitude, pressure, lux } = JSON.parse(message.toString());
-      
-      if ( timestamp === 'error' || temperature === 'error' || altitude === 'error' || pressure === 'error' || lux === 'error') {
-
-        setTimestamp_RT_BMP(new Date().toLocaleString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false,
-        }));
-
-        setTimestamp_RT_BH(new Date().toLocaleString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false,
-        }));
-
-        setTemperature_RT("-1");
-        setAltitude_RT("-1");
-        setPressure_RT("-1");        
-        setLux_RT("-1");
-        setLatestRTCTimestamp("Error");
-        setRTCTimestamp();
-
+      if(message.toString() === 'RTC sync successfull!'){
+          setMessage(message.toString());
+          showMessageFor10Seconds(message.toString());
       }else{
-
-        if( topic === 'BMP280' ){
-
-          const { timestamp, temperature, altitude, pressure } = JSON.parse(message.toString());
-          storeBMPData(timestamp, temperature, altitude, pressure);
-          setTimestamp_RT_BMP(timestamp);
-          setTemperature_RT(temperature);
-          setAltitude_RT(altitude);
-          setPressure_RT(pressure);
-        } else if( topic === 'BH1750' ){
-          const { timestamp, lux } = JSON.parse(message.toString());
-          storeBHData(timestamp, lux);
-          setTimestamp_RT_BH(timestamp);
-          setLux_RT(lux);
-        } else if ( topic === 'RTC' ){
-          const { timestamp } = JSON.parse(message.toString());
-          setRTCTimestamp(new Date(timestamp));
-          setLatestRTCTimestamp(timestamp);
+        const { timestamp, temperature, altitude, pressure, lux } = JSON.parse(message.toString());
+      
+        if ( timestamp === 'error' || temperature === 'error' || altitude === 'error' || pressure === 'error' || lux === 'error') {
+  
+          setTimestamp_RT_BMP(new Date().toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }));
+  
+          setTimestamp_RT_BH(new Date().toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+          }));
+  
+          setTemperature_RT("-1");
+          setAltitude_RT("-1");
+          setPressure_RT("-1");        
+          setLux_RT("-1");
+          setLatestRTCTimestamp("Error");
+          setRTCTimestamp();
+  
+        }else{
+  
+          if( topic === 'BMP280' ){
+  
+            const { timestamp, temperature, altitude, pressure } = JSON.parse(message.toString());
+            storeBMPData(timestamp, temperature, altitude, pressure);
+            setTimestamp_RT_BMP(timestamp);
+            setTemperature_RT(temperature);
+            setAltitude_RT(altitude);
+            setPressure_RT(pressure);
+          } else if( topic === 'BH1750' ){
+            const { timestamp, lux } = JSON.parse(message.toString());
+            storeBHData(timestamp, lux);
+            setTimestamp_RT_BH(timestamp);
+            setLux_RT(lux);
+          } else if ( topic === 'RTC' ){
+              const { timestamp } = JSON.parse(message.toString());
+              setRTCTimestamp(new Date(timestamp));
+              setLatestRTCTimestamp(timestamp);
+            }
+            
         }
       }
+
+      
 
     });
 
@@ -379,6 +390,14 @@ const App = () => {
     }
   };
   
+  const showMessageFor10Seconds = (messageText) => {
+    setMessage(messageText);
+    setShowMessage(true);
+
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 5000); // 10000 millisecondi = 10 secondi
+  };
 
 
   return (
@@ -455,6 +474,8 @@ const App = () => {
               </div>          
            
             </div>
+
+            {showMessage && <div className='enabled'>{message}</div>}
             
           </div>
           
@@ -480,8 +501,10 @@ const App = () => {
                 <p>Ultimo aggiornamento: {timestamp_DB_BH[timestamp_DB_BH.length - 1] ? new Date(timestamp_DB_BH[timestamp_DB_BH.length - 1]).toLocaleString() : ""}</p>
               </div>
             
-        
+              
         </div>
+
+      
       </div>
       
       
