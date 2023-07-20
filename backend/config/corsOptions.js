@@ -1,3 +1,5 @@
+// Utility per la configurazione del CORS
+
 const allowedOrigins = require('./allowedOrigins');
 
 const corsOptions = {

@@ -1,3 +1,5 @@
+// Creazione del modello dei dati in MongoDB (due collection per i dati dei due sensori)
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

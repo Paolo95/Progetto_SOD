@@ -1,3 +1,5 @@
+// Utility per la connessione a Mongo DB
+
 const mongoose = require('mongoose');
 
 const connectDB = async () => {

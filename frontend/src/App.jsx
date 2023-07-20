@@ -15,6 +15,7 @@ import {
   Legend
 } from 'chart.js';
 
+// Registra i componenti di Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -27,43 +28,57 @@ ChartJS.register(
 
 const App = () => {
 
+  // status è la variabile che memorizza lo stato attuale della connessione. All'avvio è 'NON ATTIVA'
   const [status, setStatus] = useState("NON ATTIVA");
 
+  // Variabili per visualizzare lo storico dei dati del BMP280
   const [timestamp_DB_BMP, setTimestamp_DB_BMP] = useState([]);
   const [altitude_DB, setAltitude_DB] = useState([]);
   const [pressure_DB, setPressure_DB] = useState([]);
   const [temperature_DB, setTemperature_DB] = useState([]);
   const [labels_BMP, setLabels_BMP] = useState([]);
 
+  // Variabili per visualizzare i dati in tempo reale del BMP280
   const [timestamp_RT_BMP, setTimestamp_RT_BMP] = useState([]);
   const [altitude_RT, setAltitude_RT] = useState([]);
   const [pressure_RT, setPressure_RT] = useState([]);
   const [temperature_RT, setTemperature_RT] = useState([]);
 
+  // Variabili per visualizzare lo storico dei dati del BH1750
   const [timestamp_DB_BH, setTimestamp_DB_BH] = useState([]);
   const [lux_DB, setLux_DB] = useState([]);
   const [labels_BH, setLabels_BH] = useState([]);
 
+  // Variabili per visualizzare i dati in tempo reale del BH1750
   const [timestamp_RT_BH, setTimestamp_RT_BH] = useState([]);
   const [lux_RT, setLux_RT] = useState([]);
 
+  // Variabili per visualizzare L'RTC
   const [timestamp_RTC, setRTCTimestamp] = useState();
   const [latestRTCTimestamp, setLatestRTCTimestamp] = useState();
 
+  // mqttClient memorizza l'oggetto che contiene la connessione all'MQTT
   const [mqttClient, setMqttClient] = useState(null);
 
+  // E' la variabile che contiene il messaggio "RTC SYNC SUCCESSFULL" quando la sincronizzazione è stata effettuata
   const [message, setMessage] = useState('');
+
+  // showMEssage regola la visualizzazione del messaggio "RTC SYNC SUCCESSFULL"
   const [showMessage, setShowMessage] = useState(false);
   
+  // Costanti per le route delle API
   const STORE_BMP_DATA = "/storeBMPData"
   const STORE_BH_DATA = "/storeBHData"
 
   const GET_BMP_DATA = "/getBMPData"
   const GET_BH_DATA = "/getBHData"
 
+  // useEffect per connettersi al broker MQTT e sottoscriversi ai topic
+
   useEffect(() => {
-    // Connect to MQTT broker
-   
+
+    // Connessione al broker MQTT
+    
     const client = mqtt.connect(process.env.REACT_APP_MQTT_BROKER);
 
     setMqttClient(client);
@@ -74,12 +89,12 @@ const App = () => {
       getBHData();
     });
 
-    // Subscribe to a topic
+    // Sottoscrizione a i vari topic
     client.subscribe('BMP280');
     client.subscribe('BH1750');
     client.subscribe('RTC');
 
-    // Handle incoming messages
+    // Gestione dei messaggi in arrivo nei topic
     client.on('message', (topic, message) => {
 
       if(message.toString() === 'RTC sync successfull!'){
@@ -151,7 +166,7 @@ const App = () => {
 
     });
 
-    // Unsubscribe and disconnect when component unmounts
+    // Disconnessione quando il componente si smonta
     return () => {
       client.end();
       setStatus("NON ATTIVA");
@@ -160,8 +175,10 @@ const App = () => {
     // eslint-disable-next-line
   }, []);
 
+  
   useEffect(() => {
-    
+
+    // Aggiorna il timestamp RTC ogni secondo
     if ( timestamp_RTC ) {
       
       const interval = setInterval(() => {
@@ -176,8 +193,10 @@ const App = () => {
     
   }, [timestamp_RTC]);
 
+  // Funzione per memorizzare i dati BMP tramite chiamata API
   const storeBMPData = async (timestamp, temperature, altitude, pressure) => {
-
+  
+    // Logica per memorizzare i dati BMP
     try {
          
       await axios.post(STORE_BMP_DATA, 
@@ -205,8 +224,10 @@ const App = () => {
     }    
   }
 
+  // Funzione per memorizzare i dati BH tramite chiamata API
   const storeBHData = async (timestamp, lux) => {
 
+    // Logica per memorizzare i dati BH
     try {
          
       await axios.post(STORE_BH_DATA, 
@@ -232,8 +253,10 @@ const App = () => {
     }    
   }
 
+   // Funzione per ottenere i dati BMP tramite chiamata API
   const getBMPData = async () => {
-
+    
+   // Logica per ottenere i dati BMP
       try {
          
       const response = await axios.post(GET_BMP_DATA, 
@@ -262,8 +285,10 @@ const App = () => {
     }    
   }
 
+  // Funzione per ottenere i dati BH tramite chiamata API
   const getBHData = async () => {
     
+    // Logica per ottenere i dati BH
     try {
          
       const response = await axios.post(GET_BH_DATA, 
@@ -290,6 +315,7 @@ const App = () => {
     }    
   }
 
+  // Opzioni di Chart.js
   const options = {
     maintainAspectRatio: false,
     responsive: true,
@@ -309,7 +335,7 @@ const App = () => {
     },
   };
 
- 
+  // Oggetti dati di Chart.js per i diversi grafici a linee
   const tempData = {
     labels: labels_BMP,
     datasets: [
@@ -358,53 +384,67 @@ const App = () => {
     ]
   }
   
+   // Funzione per pubblicare la richiesta del sensore BMP tramite MQTT
   const publishMessageBMP = () => {
     
+    // Logica per pubblicare la richiesta del sensore BMP
     if (mqttClient) {
       const message = JSON.stringify({
         "sensor": "BMP280"
-      }); // Replace with the desired message
+      }); 
       mqttClient.publish('WEB_REQ', message);
     }
     
   };
 
+  // Funzione per pubblicare la richiesta del sensore BH tramite MQTT
   const publishMessageBH = () => {
     
+    // Logica per pubblicare la richiesta del sensore BH
     if (mqttClient) {
       const message = JSON.stringify({
         "sensor": "BH1750"
-      }); // Replace with the desired message
+      }); 
       mqttClient.publish('WEB_REQ', message);
     }
     
   };
 
+  // Funzione per pubblicare la richiesta di sincronizzazione RTC tramite MQTT
   const publishMessageRTCSync = () => {
+
+    // Logica per pubblicare la richiesta di sincronizzazione RTC
     if (mqttClient) {
       const message = JSON.stringify({
         "sensor": "RTC_SYNC"
-      }); // Replace with the desired message
+      }); 
       mqttClient.publish('WEB_REQ', message);
     }
   };
 
+  // Funzione per pubblicare la richiesta di lettura RTC tramite MQTT
   const publishMessageRTCRead = () => {
+
+     // Logica per pubblicare la richiesta di lettura RTC
     if (mqttClient) {
       const message = JSON.stringify({
         "sensor": "RTC_READ"
-      }); // Replace with the desired message
+      });
       mqttClient.publish('WEB_REQ', message);
     }
   };
+
+  // Funzione per mostrare un messaggio per 5 secondi
   
   const showMessageFor10Seconds = (messageText) => {
+
+    // Logica per mostrare il messaggio
     setMessage(messageText);
     setShowMessage(true);
 
     setTimeout(() => {
       setShowMessage(false);
-    }, 5000); // 10000 millisecondi = 10 secondi
+    }, 5000); 
   };
 
 
@@ -416,6 +456,7 @@ const App = () => {
           <h2>Castellucci Giacomo - Compagnoni Paolo - Silveri Nicola</h2>
         </div>
         <div className='real-time-div'>
+          {/* Visualizzazione dei dati in tempo reale */}
           <div className='connection-monitor'>
             <p className='real-time-title'>Dati in tempo reale</p>
             <p className={status=== 'NON ATTIVA' ? 'disabled' : 'enabled' }>Connessione MQTT: {status}</p>
@@ -491,7 +532,7 @@ const App = () => {
 
         <div className='line-charts-div'>
          
-             
+             {/* Visualizzazione dei grafici a linea */}
               <div className='line-chart'>
                 <Line options={options} data={tempData}/>
                 <p>Ultimo aggiornamento: {timestamp_DB_BMP[timestamp_DB_BMP.length - 1] ? new Date(timestamp_DB_BMP[timestamp_DB_BMP.length - 1]).toLocaleString() : ""}</p>

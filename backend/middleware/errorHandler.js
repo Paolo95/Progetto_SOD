@@ -1,3 +1,5 @@
+// Utility per la gestione degli errori
+
 const { logEvents } = require('./logEvents');
 
 const errorHandler = (err, req, res, next) => {
