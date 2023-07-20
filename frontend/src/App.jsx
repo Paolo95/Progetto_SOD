@@ -89,7 +89,7 @@ const App = () => {
       getBHData();
     });
 
-    // Sottoscrizione a i vari topic
+    // Sottoscrizione ai vari topic
     client.subscribe('BMP280');
     client.subscribe('BH1750');
     client.subscribe('RTC');
@@ -106,6 +106,9 @@ const App = () => {
 
         const { timestamp, temperature, altitude, pressure, lux } = JSON.parse(message.toString());
       
+        // Se è presente una stringa 'error' nel valore di un sensore, imposta i valori dei sensori visualizzati in real time
+        // a -1 e i timestamp alla data corrente
+
         if ( (timestamp === 'error' || temperature === 'error' || altitude === 'error' || pressure === 'error' ) && (topic === 'BMP280' ) ) {
   
           setTimestamp_RT_BMP(new Date().toLocaleString('en-US', {
@@ -193,10 +196,10 @@ const App = () => {
     
   }, [timestamp_RTC]);
 
-  // Funzione per memorizzare i dati BMP tramite chiamata API
+  // Funzione per memorizzare i dati provenienti dal sensore BMP280 tramite chiamata API
   const storeBMPData = async (timestamp, temperature, altitude, pressure) => {
   
-    // Logica per memorizzare i dati BMP
+    // Logica per memorizzare i dati provenienti dal sensore BMP280
     try {
          
       await axios.post(STORE_BMP_DATA, 
@@ -224,10 +227,10 @@ const App = () => {
     }    
   }
 
-  // Funzione per memorizzare i dati BH tramite chiamata API
+  // Funzione per memorizzare i dati provenienti dal sensore BH1750 tramite chiamata API
   const storeBHData = async (timestamp, lux) => {
 
-    // Logica per memorizzare i dati BH
+    // Logica per memorizzare i dati provenienti dal sensore BH1750
     try {
          
       await axios.post(STORE_BH_DATA, 
@@ -253,10 +256,10 @@ const App = () => {
     }    
   }
 
-   // Funzione per ottenere i dati BMP tramite chiamata API
+   // Funzione per ottenere i dati del sensore BMP280 tramite chiamata API
   const getBMPData = async () => {
     
-   // Logica per ottenere i dati BMP
+   // Logica per ottenere i dati del sensore BMP280
       try {
          
       const response = await axios.post(GET_BMP_DATA, 
@@ -285,10 +288,10 @@ const App = () => {
     }    
   }
 
-  // Funzione per ottenere i dati BH tramite chiamata API
+  // Funzione per ottenere i dati del sensore BH1750 tramite chiamata API
   const getBHData = async () => {
     
-    // Logica per ottenere i dati BH
+    // Logica per ottenere i dati del sensore BH1750
     try {
          
       const response = await axios.post(GET_BH_DATA, 
@@ -384,10 +387,10 @@ const App = () => {
     ]
   }
   
-   // Funzione per pubblicare la richiesta del sensore BMP tramite MQTT
+   // Funzione per pubblicare la richiesta del sensore BMP280 tramite MQTT
   const publishMessageBMP = () => {
     
-    // Logica per pubblicare la richiesta del sensore BMP
+     // Logica per pubblicare la richiesta dei dati del sensore BMP280
     if (mqttClient) {
       const message = JSON.stringify({
         "sensor": "BMP280"
@@ -397,10 +400,10 @@ const App = () => {
     
   };
 
-  // Funzione per pubblicare la richiesta del sensore BH tramite MQTT
+  // Funzione per pubblicare la richiesta del sensore BH1750 tramite MQTT
   const publishMessageBH = () => {
     
-    // Logica per pubblicare la richiesta del sensore BH
+    // Logica per pubblicare la richiesta dei dati del sensore BH1750
     if (mqttClient) {
       const message = JSON.stringify({
         "sensor": "BH1750"
